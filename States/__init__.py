@@ -1,1 +1,3 @@
-from .test import test
+from .test import BotStates
+
+__all__ = ['BotStates']

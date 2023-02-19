@@ -1,8 +1,6 @@
-from sre_parse import State
-
-from aiogram.dispatcher.filters.state import StatesGroup
+from aiogram.dispatcher.filters.state import State, StatesGroup
 
 
-class test(StatesGroup):
-    test1 = State()
-    test2 = State()
+class BotStates(StatesGroup):
+    getting = State()
+    mailing = State()
