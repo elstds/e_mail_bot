@@ -1,3 +1,5 @@
-from .test import BotStates
+from .common import CommonStates
+from .add_user import Add_States
+from .rm_user import RemoveStates
 
-__all__ = ['BotStates']
+__all__ = ['CommonStates']
