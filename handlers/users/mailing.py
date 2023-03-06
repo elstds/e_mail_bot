@@ -1,3 +1,5 @@
+import asyncio
+
 from aiogram import types
 from aiogram.dispatcher.filters import Command
 from aiogram.dispatcher import FSMContext
@@ -25,51 +27,58 @@ async def start_mailing(message: types.Message):
 
 @dp.message_handler(state=CommonStates.mailing)
 async def getting_mails(message: types.Message, state: FSMContext):
-    await message.answer("Рассылка запущена", reply_markup=None)
+    stat = True
     imap = connection()
-    status, messages = imap.select(dirs[0])
-    res, unseen_msg = imap.uid("search", "UNSEEN", "ALL")
-    unseen_msg = unseen_msg[0].decode("utf-8").split(" ")
-
-    if unseen_msg[0]:
-        for letter in unseen_msg:
-            res, msg = imap.uid("fetch", letter, "(RFC822)")
-            if res == "OK":
-                msg = email.message_from_bytes(msg[0][1])
-                msg_from = from_subj_decode(msg['From'])
-                msg_subj = from_subj_decode(msg['Subject'])
-                if msg['Message-ID']:
-                    msg_id = msg['Message-ID'].lstrip("<").rstrip(">")
-                else:
-                    msg_id = msg['Received']
-                if msg['Return-path']:
-                    msg_email = msg['Return-path'].lstrip("<").rstrip(">")
-                else:
-                    msg_email = msg_from
-
-                if not msg_email:
-                    encoding = decode_header(msg["From"])[0][1]
-                    msg_email = (
-                        decode_header(msg['From'])[1][0]
-                        .decode(encoding)
-                        .replace("<", "")
-                        .replace(">", "")
-                        .replace(" ", "")
-                    )
-                letter_text = get_letter_text(msg)
-                attachments = get_attachments(msg)
-
-                post_text = post_construct(msg_subj, msg_from, msg_email, letter_text, attachments)
-
-                if len(post_text) > 4000:
-                    post_text = post_text[:4000]
-
-                for user_id in users_id:
-                    dp.bot.send_message(text=post_text, chat_id=user_id)
-
+    if message.text == "/stop_mailing":
+        stat = False
+        await message.answer("Рассылка отключена")
         imap.logout()
+        await state.finish()
     else:
-        imap.logout()
+        await message.answer("Рассылка запущена", reply_markup=None)
+        while stat:
+
+            status, messages = imap.select(dirs[0])
+            res, unseen_msg = imap.uid("search", "UNSEEN", "ALL")
+            unseen_msg = unseen_msg[0].decode("utf-8").split(" ")
+
+            if unseen_msg[0]:
+                for letter in unseen_msg:
+                    res, msg = imap.uid("fetch", letter, "(RFC822)")
+                    if res == "OK":
+                        msg = email.message_from_bytes(msg[0][1])
+                        msg_from = from_subj_decode(msg['From'])
+                        msg_subj = from_subj_decode(msg['Subject'])
+                        if msg['Message-ID']:
+                            msg_id = msg['Message-ID'].lstrip("<").rstrip(">")
+                        else:
+                            msg_id = msg['Received']
+                        if msg['Return-path']:
+                            msg_email = msg['Return-path'].lstrip("<").rstrip(">")
+                        else:
+                            msg_email = msg_from
+
+                        if not msg_email:
+                            encoding = decode_header(msg["From"])[0][1]
+                            msg_email = (
+                                decode_header(msg['From'])[1][0]
+                                .decode(encoding)
+                                .replace("<", "")
+                                .replace(">", "")
+                                .replace(" ", "")
+                            )
+                        letter_text = get_letter_text(msg)
+                        attachments = get_attachments(msg)
+
+                        post_text = post_construct(msg_subj, msg_from, msg_email, letter_text, attachments)
+
+                        if len(post_text) > 4000:
+                            post_text = post_text[:4000]
+
+                        for user_id in users_id:
+                            await dp.bot.send_message(text=post_text, chat_id=user_id)
+            await asyncio.sleep(30)
+
 
 
 def connection():
@@ -79,6 +88,7 @@ def connection():
         return imap
     else:
         return False
+
 
 def from_subj_decode(msg_from_subj):
     if msg_from_subj:

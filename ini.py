@@ -1,5 +1,4 @@
 import json
-import sqlite3 as sql
 
 bot_token = input("Введите токен бота: ")
 print("=" * 80)
@@ -28,18 +27,4 @@ config = {
 with open('data/config.json', 'w') as file:
     json.dump(config, file)
 
-db = sql.connect('.db')
-
-c = db.cursor()
-c.execute("""
-CREATE TABLE letters (
-    id integer,
-    header text,
-    content text,
-    autor text,
-    is_sended integer
-)
-""")
-
-db.close
 

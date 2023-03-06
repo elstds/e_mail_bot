@@ -8,5 +8,4 @@ admin_kb_menu = ReplyKeyboardMarkup(
         ]
     ],
     resize_keyboard=True,
-    
 )

@@ -16,7 +16,7 @@ async def stop_mailing(message: types.Message):
         await message.answer("Вы не являетесь администратором")
 
 
-@dp.message_handler(state=CommonStates.base)zlib
+@dp.message_handler(state=CommonStates.base)
 async def base(message: types.Message, state: FSMContext):
     if message.from_user.id:
         await message.answer("Рассылка отключена")
