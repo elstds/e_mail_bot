@@ -1,2 +1,12 @@
 config.json
 .db
+__pycache__
+data/__pycache__
+handlers/__pycache__
+handlers/users/__pycache__
+keyboards/__pycache__
+keyboards/default/__pycache__
+keyboards/inline/__pycache__
+States/__pycache__
+utils/__pycache__
+handlers/users/test.py

@@ -5,6 +5,9 @@ user_type_keyboard = ReplyKeyboardMarkup(
         [
             KeyboardButton(text='Пользователь'),
             KeyboardButton(text='Администратор')
+        ],
+        [
+            KeyboardButton(text='Отмена')
         ]
     ],
     resize_keyboard=True,
