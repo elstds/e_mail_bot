@@ -137,11 +137,14 @@ def get_attachments(msg):
     attachments = list()
     for part in msg.walk():
         if (
-                part.get_content_disposition() == 'attachment'
+                
+                part["Content-Type"]
+                and "name" in part["Content-Type"]
+                and part.get_content_disposition() == 'attachment'
         ):
             str_pl = part["Content-Type"]
             str_pl = encode_att_names(str_pl)
-            attachments.append(str(part))
+            attachments.append(str_pl)
     return attachments
 
 
