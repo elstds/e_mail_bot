@@ -5,6 +5,7 @@
 изменять e-mail адрес и каталоги, из которых собираются письма.
 
 Установка:
+
     git clone https://github.com/elstds/e_mail_bot
     cd e_mail_bot
     python ini.py
@@ -12,3 +13,4 @@
     source venv/bin/activate
     pip install -r requirements.txt
     python main.py
+
